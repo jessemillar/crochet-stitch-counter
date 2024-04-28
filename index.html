@@ -55,25 +55,34 @@
 
       window.addEventListener("keydown", function (event) {
         if (event.keyCode === 32) {
-          stitchCounter++;
-          stitchIndex = ((stitchCounter - 1) % stitchPattern.length) + 1;
-          var displayArea = document.getElementById("displayArea");
-          var currentStitchElement = displayArea.lastChild;
-          currentStitchElement.textContent = "Current stitch: " + stitchCounter + ", " + stitchPattern[stitchIndex - 1];
-
-          // Play sound effect based on the current stitch
-          var stitchType = stitchPattern[stitchIndex - 1];
-          var audioElement = document.getElementById(stitchType + "Sound");
-          if (audioElement) {
-            audioElement.play();
-          }
-
-          // Play done.ogg when total stitches are reached
+          // Spacebar key
           var totalStitches = parseInt(document.getElementById("inputText").value.match(/\((\d+)\)/)[1]);
-          if (stitchCounter === totalStitches) {
-            var doneSound = document.getElementById("doneSound");
-            if (doneSound) {
-              doneSound.play();
+          if (stitchCounter < totalStitches) {
+            stitchCounter++;
+            stitchIndex = ((stitchCounter - 1) % stitchPattern.length) + 1;
+            var displayArea = document.getElementById("displayArea");
+            var currentStitchElement = displayArea.lastChild;
+            currentStitchElement.textContent = "Current stitch: " + stitchCounter + ", " + stitchPattern[stitchIndex - 1];
+
+            // Play sound effect based on the current stitch
+            var stitchType = stitchPattern[stitchIndex - 1];
+            var audioElement = document.getElementById(stitchType + "Sound");
+            if (audioElement) {
+              audioElement.play();
+            }
+
+            // Play done.ogg when total stitches are reached
+            if (stitchCounter === totalStitches) {
+              var doneSound = document.getElementById("doneSound");
+              if (doneSound) {
+                doneSound.play();
+              }
+            }
+          } else {
+            // Play error.ogg when trying to go above total stitches
+            var errorSound = document.getElementById("errorSound");
+            if (errorSound) {
+              errorSound.play();
             }
           }
         } else if (event.keyCode === 40) {
