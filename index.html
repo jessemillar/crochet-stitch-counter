@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        var stitchCounter = 1;
+        var stitchPattern = [];
+        var stitchIndex = 1;
+
+        function parseStitchPattern(event) {
+            event.preventDefault();
+            var inputText = document.getElementById('inputText').value;
+            var pattern = inputText.match(/\[(.*?)\]/)[1];
+            var repetitions = inputText.match(/x (\d+)/)[1];
+            var totalStitches = inputText.match(/\((\d+)\)/)[1];
+            var rawStitchPattern = pattern.split(', ');
+
+            stitchPattern = rawStitchPattern.map(stitch => {
+                var match = stitch.match(/(\d+) (.*)/);
+                if (match) {
+                    var count = parseInt(match[1]);
+                    var type = match[2];
+                    return Array(count).fill(type === 'inc' ? ['inc (1)', 'inc (2)'] : type);
+                } else {
+                    return stitch === 'inc' ? ['inc (1)', 'inc (2)'] : stitch;
+                }
+            }).flat();
+
+            var displayArea = document.getElementById('displayArea');
+            displayArea.innerHTML = 'Pattern: ' + pattern + '<br>' +
+                                   'Repetitions: ' + repetitions + '<br>' +
+                                   'Total stitches: ' + totalStitches + '<br>' +
+                                   'Current stitch: ' + stitchCounter + ', ' + stitchPattern[stitchIndex - 1];
+        }
+
+        window.addEventListener('keydown', function(event) {
+            if (event.keyCode === 32) {
+                stitchCounter++;
+                stitchIndex = (stitchCounter - 1) % stitchPattern.length + 1;
+                var displayArea = document.getElementById('displayArea');
+                var currentStitchElement = displayArea.lastChild;
+                currentStitchElement.textContent = 'Current stitch: ' + stitchCounter + ', ' + stitchPattern[stitchIndex - 1];
+
+                // Play sound effect based on the current stitch
+                var stitchType = stitchPattern[stitchIndex - 1];
+                var audioElement = document.getElementById(stitchType + 'Sound');
+                if (audioElement) {
+                    audioElement.play();
+                }
+
+                // Play done.ogg when total stitches are reached
+                var totalStitches = parseInt(document.getElementById('inputText').value.match(/\((\d+)\)/)[1]);
+                if (stitchCounter === totalStitches) {
+                    var doneSound = document.getElementById('doneSound');
+                    if (doneSound) {
+                        doneSound.play();
+                    }
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+<form onsubmit="parseStitchPattern(event)">
+    <input type="text" id="inputText" name="inputText">
+    <input type="submit" value="Submit">
+</form>
+<div id="displayArea" style="width: 100%; height: 200px; border: 1px solid black;"></div>
+
+<!-- Add audio elements for each stitch type -->
+<audio id="inc (1)Sound" src="inc1.ogg"></audio>
+<audio id="inc (2)Sound" src="inc2.ogg"></audio>
+<audio id="scSound" src="sc.ogg"></audio>
+<audio id="doneSound" src="done.ogg"></audio>
+<!-- Add more audio elements as needed -->
+</body>
+</html>
