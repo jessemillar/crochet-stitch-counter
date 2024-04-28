@@ -18,23 +18,41 @@
       function parseStitchPattern(event) {
         event.preventDefault();
         var inputText = document.getElementById("inputText").value;
-        var pattern = inputText.match(/\[(.*?)\]/)[1];
-        var repetitions = inputText.match(/x (\d+)/)[1];
-        var totalStitches = inputText.match(/\((\d+)\)/)[1];
-        var rawStitchPattern = pattern.split(", ");
 
-        stitchPattern = rawStitchPattern
-          .map((stitch) => {
-            var match = stitch.match(/(\d+) (.*)/);
-            if (match) {
-              var count = parseInt(match[1]);
-              var type = match[2];
-              return Array(count).fill(type === "inc" ? ["inc (1)", "inc (2)"] : type === "dec" ? "dec" : type);
-            } else {
-              return stitch === "inc" ? ["inc (1)", "inc (2)"] : stitch === "dec" ? "dec" : stitch;
-            }
-          })
-          .flat();
+        // Strip leading and trailing whitespace
+        inputText = inputText.trim();
+
+        // Remove non-ASCII characters
+        inputText = inputText.replace(/[^\x00-\x7F]/g, "");
+        var pattern, repetitions, totalStitches;
+
+        // Check if the pattern is in the format "24 sc (24)"
+        var simplePatternMatch = inputText.match(/^(\d+) (\w+) \((\d+)\)$/);
+        if (simplePatternMatch) {
+          pattern = simplePatternMatch[2];
+          repetitions = 1;
+          totalStitches = simplePatternMatch[3];
+          stitchPattern = Array(parseInt(simplePatternMatch[1])).fill(pattern);
+        } else {
+          // Existing code for parsing the pattern
+          pattern = inputText.match(/\[(.*?)\]/)[1];
+          repetitions = inputText.match(/x (\d+)/)[1];
+          totalStitches = inputText.match(/\((\d+)\)/)[1];
+          var rawStitchPattern = pattern.split(", ");
+
+          stitchPattern = rawStitchPattern
+            .map((stitch) => {
+              var match = stitch.match(/(\d+) (.*)/);
+              if (match) {
+                var count = parseInt(match[1]);
+                var type = match[2];
+                return Array(count).fill(type === "inc" ? ["inc (1)", "inc (2)"] : type === "dec" ? "dec" : type);
+              } else {
+                return stitch === "inc" ? ["inc (1)", "inc (2)"] : stitch === "dec" ? "dec" : stitch;
+              }
+            })
+            .flat();
+        }
 
         var displayArea = document.getElementById("displayArea");
         displayArea.innerHTML =
