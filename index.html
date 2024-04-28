@@ -17,6 +17,12 @@
 
       function parseStitchPattern(event) {
         event.preventDefault();
+
+        // Reset counter, index, and pattern
+        stitchCounter = 1;
+        stitchIndex = 1;
+        stitchPattern = [];
+
         var inputText = document.getElementById("inputText").value;
 
         // Strip leading and trailing whitespace
