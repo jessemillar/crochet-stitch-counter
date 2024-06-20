@@ -77,9 +77,20 @@
           stitchPattern[stitchIndex - 1];
       }
 
+      var isSpacebarDown = false;
+
       window.addEventListener("keydown", function (event) {
         if (event.keyCode === 32) {
           // Spacebar key
+          event.preventDefault(); // Prevent page from scrolling
+
+          if (isSpacebarDown) {
+            // If spacebar is already down, return early
+            return;
+          }
+
+          isSpacebarDown = true;
+
           var totalStitches = parseInt(document.getElementById("inputText").value.match(/\((\d+)\)/)[1]);
           if (stitchCounter < totalStitches) {
             stitchCounter++;
@@ -121,6 +132,13 @@
           }
         }
       });
+
+      window.addEventListener("keyup", function (event) {
+        if (event.keyCode === 32) {
+          // Spacebar key
+          isSpacebarDown = false;
+        }
+      });
     </script>
   </head>
   <body>
@@ -132,8 +150,8 @@
 
     <!-- Add audio elements for each stitch type -->
     <audio id="inc (1)Sound" src="sounds/inc1.ogg"></audio>
-    <audio id="inc (2)Sound" src="sounds/inc2.ogg"></audio>
-    <audio id="scSound" src="sounds/sc.ogg"></audio>
+    <audio id="inc (2)Sound" src="sounds/sc.ogg"></audio>
+    <audio id="scSound" src="sounds/error.ogg"></audio>
     <audio id="decSound" src="sounds/dec.ogg"></audio>
     <audio id="doneSound" src="sounds/done.ogg"></audio>
   </body>
