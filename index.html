@@ -15,6 +15,11 @@
       var stitchPattern = [];
       var stitchIndex = 1;
 
+      var stitchFullNames = {
+        "inc (1)": "increase",
+        dec: "decrease",
+      };
+
       function parseStitchPattern(event) {
         event.preventDefault();
 
@@ -77,6 +82,16 @@
           stitchPattern[stitchIndex - 1];
       }
 
+      function say(text) {
+        var utterance = new SpeechSynthesisUtterance(text);
+        var voices = window.speechSynthesis.getVoices();
+        var davidVoice = voices.find((voice) => voice.name === "Microsoft David - English (United States)");
+        if (davidVoice) {
+          utterance.voice = davidVoice;
+        }
+        window.speechSynthesis.speak(utterance);
+      }
+
       var isSpacebarDown = false;
 
       window.addEventListener("keydown", function (event) {
@@ -104,14 +119,13 @@
             var audioElement = document.getElementById(stitchType + "Sound");
             if (audioElement) {
               audioElement.play();
+            } else {
+              say(stitchFullNames[stitchType] || stitchType);
             }
 
-            // Play done.ogg when total stitches are reached
+            // Announce that we're done when the total number of stitches is reached
             if (stitchCounter === totalStitches) {
-              var doneSound = document.getElementById("doneSound");
-              if (doneSound) {
-                doneSound.play();
-              }
+              say("Done");
             }
           } else {
             // Play error.ogg when trying to go above total stitches
@@ -149,10 +163,7 @@
     <div id="displayArea" style="width: 100%; height: 200px; border: 1px solid black"></div>
 
     <!-- Add audio elements for each stitch type -->
-    <audio id="inc (1)Sound" src="sounds/inc1.ogg"></audio>
     <audio id="inc (2)Sound" src="sounds/sc.ogg"></audio>
     <audio id="scSound" src="sounds/error.ogg"></audio>
-    <audio id="decSound" src="sounds/dec.ogg"></audio>
-    <audio id="doneSound" src="sounds/done.ogg"></audio>
   </body>
 </html>
